@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="stylesheet" href="./static/bootstrap.css">
     <meta charset="'UTF-8">
     <meta name="viewport"
     content="width=device-width,
@@ -10,9 +11,14 @@
 <body>
     <div class="container">
         <h1>Tarefas</h1>
-        <form method="post">
-            <label for="task_name
+        <form method="put">
+            <label for="task_name">Título da tarefa:</label>
+            <input type="text" name="task_name" id="task_name" required>
+            <label for="task_description">Descrição da tarefa:</label>
+            <input type="text" name="task_description" id="task_description" required>
+            <input type="submit" value="Adicionar tarefa">
         </form>
+        
     </div>
 </body>
 </html>
