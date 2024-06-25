@@ -4,11 +4,11 @@ from tasks import db, Task
 app = Bottle()
 
 
-@route('/a')
+@get('/a')
 def index():
     return template('index.html')
 
-@route('/a', method = 'POST')
+@post('/a', method = 'POST')
 def process_form():
    task_name = request.forms.get('task')
    task_description = request.forms.get('description')
