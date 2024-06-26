@@ -3,10 +3,14 @@ from tasks import db, Task
 
 app = Bottle()
 
+@route("/static/bootstrap.css")
+def static(bootstrap):
+    return static_file(bootstrap.css, root="static")
 
 @get('/a')
 def index():
     return template('index.html')
+    
 
 @post('/a', method = 'POST')
 def process_form():
