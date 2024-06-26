@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="'UTF-8">
+    <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <link rel = "stylesheet"type="text/css" href="/static/bootstrap.css" >
+</head>
+<body>
+    <div class="container">
+        <h2>Adicionar tarefa</h2>
+        <form action="/add" method="post">
+            <input type="text" name="task_name" placeholder="Nome da tarefa" id="task_name" required>
+            <input type="text" name="task_description" placeholder="descrição" id="task_description" required>
+            <input type="submit" value="Adicionar tarefa">
+        </form>
+        <ol>
+            % for task in tasks:
+            <li>{{task.task_name}} - {{task.task_description}}</li>
+            % end
+        </ol>
+    </div>
+</body>
+</html>
