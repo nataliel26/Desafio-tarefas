@@ -1,17 +1,20 @@
 from bottle import  Bottle, route, run, template, get, post, request, static_file
-from tasks import db, Task
+from tasks import Task, initialize_db
 
 app = Bottle()
+initialize_db()
 
 
-@get('/a')
+@app.route('/')
 def index():
-    return template('index.html')
+    return template('views/index.html')
 
-@post('/a', method = 'POST')
+@post('/add', method = 'POST')
 def process_form():
    task_name = request.forms.get('task')
    task_description = request.forms.get('description')
+   if task_name:
+       Task.create(task_name = task_name)
 
 if __name__ == '__main__':
-    run()
+    run(app, host='localhost', port=8080, debug=True)

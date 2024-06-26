@@ -9,6 +9,11 @@ class Task(Model):
     class Meta:
         database = db
 
+def initialize_db():
+    db.connect()
+    db.create_tables([Task], safe=True)
+    db.close()
+
 
 
     
