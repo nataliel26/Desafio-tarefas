@@ -15,7 +15,7 @@ def index():
 
 # Rota para adicionar novas tarefas
 @app.post('/add')
-def process_form():
+def add_task():
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
 
@@ -23,6 +23,10 @@ def process_form():
        Task.create(task_name=task_name, task_description=task_description)
        return redirect ('/')
 
+@app.put('/edit/<id:int>')
+def update_task(id):
+    task = Task.get(Task.id == id)
+    task.edit()
 
 # Rota para deletar as tarefas
 @app.route('/delete/<id:int>')
