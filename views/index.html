@@ -11,7 +11,7 @@
     <div class="content">
         <ol><h2>Tarefas</h2>
             % for task in tasks:
-            <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <a href="/edit/{{task.id}}"><button type="submit" onclick="editTask('{{task.task_name}}', '{{task.task_description}}')">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
+            <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <a href="/edit/{{task.id}}" class="btn">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
             % end
         </ol>
     <div class="container">
@@ -26,14 +26,5 @@
         </form>
     </div>
     </div>
-    <script>
-        function editTask(id, name, description){
-            document.getElementById('task_name').value = name;
-            document.getElementById('task_description').value = description;
-            document.getElementById('form-title').innerText = 'Editar tarefa';
-            document.getElementById('button').value = 'Salvar';
-            document.getElementById('task-form').action = '/edit/' + id;
-        }
-    </script>
 </body>
 </html>

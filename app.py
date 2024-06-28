@@ -32,7 +32,7 @@ def edit_task(id):
     task = Task.get (Task.id == id)
     task.task_name = request.forms.get('task_name')
     task.task_description = request.forms.get('task_description')
-    Task.save()
+    task.save()
     return redirect('/')
 
 # Rota para deletar as tarefas
