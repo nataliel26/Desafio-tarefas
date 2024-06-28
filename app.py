@@ -16,12 +16,20 @@ def index():
 # Rota para adicionar novas tarefas
 @app.post('/add')
 def add_task():
+   task_id = request.forms.get('task_id')
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
 
-   if task_name and task_description:
+   if task_id:
+       task = Task.get(Task.id == task_id)
+       task.task_name = task_name
+       task.task_description = task_description
+       task.save()
+       return redirect('/')
+   
+   else:
        Task.create(task_name=task_name, task_description=task_description)
-       return redirect ('/')
+       return redirect('/')
 
 @app.put('/edit/<id:int>')
 def update_task(id):
