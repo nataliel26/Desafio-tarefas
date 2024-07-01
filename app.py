@@ -11,7 +11,7 @@ def server_static(filepath):
 @app.get('/')
 def index():
     tasks = Task.select()
-    return template('index', tasks=tasks, task=None)
+    return template('index', tasks=tasks)
 
 # Rota para adicionar novas tarefas
 @app.post('/add')
@@ -21,17 +21,19 @@ def add_task():
    Task.create(task_name=task_name, task_description=task_description)
    return redirect('/')
 
-@app.get('/edit/<id:int>')
-def edit_form(id):
+@app.route('/edit/<id:int>')
+def edit_task(id):
     task = Task.get(Task.id == id)
     tasks = Task.select()
-    return template('index', tasks=tasks, task=task)
+    return template('index', tasks=tasks)
 
 @app.post('/edit/<id:int>')
-def edit_task(id):
-    task = Task.get (Task.id == id)
-    task.task_name = request.forms.get('task_name')
-    task.task_description = request.forms.get('task_description')
+def update_task(id):
+    task_name = request.forms.get('task_name')
+    task_description = request.forms.get('task_description')
+    task = Task.get(Task.id == id)
+    task.task_name = task_name
+    task.task_description = task_description
     task.save()
     return redirect('/')
 
