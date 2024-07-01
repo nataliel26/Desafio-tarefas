@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.css" >
 </head>
 <body>
-    <div class="content">
         <ol><h2>Tarefas</h2>
             % for task in tasks:
             <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <a href="/edit/{{task.id}}" class="btn">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
@@ -21,7 +20,6 @@
             <input type="text" name="task_description" placeholder="descrição" id="task_description" value="{{task.task_description if edit_task else ''}}" required>
             <input id="button" type="submit" value="{{'Salvar' if edit_task else'Adicionar'}}">
         </form>
-    </div>
     </div>
 </body>
 </html>

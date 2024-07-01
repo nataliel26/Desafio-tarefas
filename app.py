@@ -21,12 +21,14 @@ def add_task():
    Task.create(task_name=task_name, task_description=task_description)
    return redirect('/')
 
+# Rota para seleção da tarefa a ser editada
 @app.route('/edit/<id:int>')
 def edit_task(id):
     task = Task.get(Task.id == id)
     tasks = Task.select()
     return template('index', tasks=tasks,edit_task=task)
 
+# Rota para editar tarefas
 @app.post('/edit/<id:int>')
 def update_task(id):
     task_name = request.forms.get('task_name')
