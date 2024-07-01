@@ -15,11 +15,11 @@
             % end
         </ol>
     <div class="container">
-        <h2 id="form-title">{{'Editar' if task else 'Nova'}} Tarefa</h2>
-        <form id="task-form" action="{{'/edit/' and task.id if task else '/add'}}" method="post">
-            <input type="text" name="task_name" placeholder="Nome da tarefa" id="task_name" placeholder="Nome da tarefa" required>
-            <input type="text" name="task_description" placeholder="descrição" id="task_description" placeholder="descrição da tarefa" required>
-            <input id="button" type="submit" value="Adicionar">
+        <h2 id="form-title">{{ 'Editar' if edit_task else 'Nova' }} Tarefa</h2>
+        <form id="task-form" action="{{'/edit/' and task.id if edit_task else '/add'}}" method="post">
+            <input type="text" name="task_name" placeholder="Nome da tarefa" id="task_name" value="{{task.task_name if edit_task else ''}}" required>
+            <input type="text" name="task_description" placeholder="descrição" id="task_description" value="{{task.task_description if edit_task else ''}}" required>
+            <input id="button" type="submit" value="{{'Salvar' if edit_task else'Adicionar'}}">
         </form>
     </div>
     </div>
