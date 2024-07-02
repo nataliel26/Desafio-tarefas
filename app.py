@@ -66,12 +66,31 @@ def update_task(id):
     task.save()
     return redirect('/')
 
+# Rota para edição de tarefas usando json
+@app.put('/api/v1/tasks/<id:int>')
+def edit_task_json(id):
+    task = Task.get(Task.id == id)
+    task_data = request.json
+    task.task_name=task_data['name']
+    task.task_description=task_data.get('description', '')
+    task.save()
+    response.content_type = 'application/json'
+    return tasks_to_dict(task)
+
 # Rota para deletar as tarefas
 @app.route('/delete/<id:int>')
 def delete_task(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
     return redirect ('/')
+
+# Rota para deletar as tarefas pelo id
+@app.delete('/api/v1/tasks/<id:int>')
+def delete_task_json(id):
+    task = Task.get(Task.id == id)
+    task.delete_instance()
+    response.status = 200
+    return response
 
 
 if __name__ == '__main__':
