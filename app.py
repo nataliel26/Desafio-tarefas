@@ -1,7 +1,14 @@
-from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, SimpleTemplate
+from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
 from models import db, Task, initialize_db
 
 app = Bottle()
+
+def tasks_to_dict(task):
+    return {
+        'id': task.id,
+        'name': task.task_name,
+        'description': task.task_description
+    }
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
@@ -13,6 +20,14 @@ def index():
     tasks = Task.select()
     return template('index', tasks=tasks, edit_task=None)
 
+# Rota para exibir as tarefas em formato application/json
+@app.get('/api/v1/tasks')
+def get_tasks():
+    tasks = Task.select()
+    tasks_list = [tasks_to_dict(task) for task in tasks]
+    response.content_type = 'application/json'
+    return {'tarefas' : tasks_list}
+
 # Rota para adicionar novas tarefas
 @app.post('/add')
 def add_task():
@@ -20,6 +35,18 @@ def add_task():
    task_description = request.forms.get('task_description')
    Task.create(task_name=task_name, task_description=task_description)
    return redirect('/')
+
+# Rota para adicionar novas tarefas com json
+@app.post('/api/v1/tasks')
+def add_task_json():
+   task_data = request.json
+   new_task = Task.create(
+       task_name=task_data['name'],
+       task_description=task_data.get('description', '')
+   )
+   response.content_type = 'application/json'
+   response.status = 201
+   return tasks_to_dict(new_task)
 
 # Rota para seleção da tarefa a ser editada
 @app.route('/edit/<id:int>')
@@ -45,6 +72,7 @@ def delete_task(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
     return redirect ('/')
+
 
 if __name__ == '__main__':
     initialize_db()

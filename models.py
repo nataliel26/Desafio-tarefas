@@ -1,4 +1,5 @@
 from peewee import *
+from playhouse.sqlite_ext import *
 
 db = SqliteDatabase ('tasks.db')
 
