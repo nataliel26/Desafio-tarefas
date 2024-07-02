@@ -6,6 +6,7 @@ Com esta aplicação é possível o gerenciamento de uma lista de tarefas simple
 
 - Visualização da lista de tarefas;
 - Adição de novas tarefas à lista;
+- Edição de tarefas já existentes;
 - Remoção de tarefas da lista.
 
 Para rodar a aplicação:
