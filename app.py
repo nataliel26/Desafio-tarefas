@@ -1,5 +1,7 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
 from models import db, Task, initialize_db
+import bcrypt
+import jwt
 
 app = Bottle()
 
