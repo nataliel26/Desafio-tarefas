@@ -4,13 +4,32 @@ from functools import wraps
 import bcrypt
 import jwt
 
+app = Bottle()
+
 with open('private_key.pem', 'r') as f:
     private_key = f.read()
 
 with open('public_key.pem', 'r') as f:
     public_key = f.read()
 
-app = Bottle()
+def authentication(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.get_header('Authorization')
+
+        if not token:
+            response.status = 401
+            return redirect('/signin')
+        
+        try: 
+            data = jwt.decode(token, public_key, algorithms=['RS256'])
+            request.user = data['username']
+        except jwt.InvalidTokenError:
+            response.status = 401
+            return redirect('/signin')
+        
+        return func(*args, **kwargs)
+    return decorated
 
 def tasks_to_dict(task):
     return {
@@ -55,6 +74,10 @@ def signin():
         response.status = 400
         return "Senha inválida"
     
+    token = jwt.encode({
+        'username': user.username
+    }, private_key, algorithm='RS256')
+    
     return redirect('/')
 
 
@@ -74,6 +97,7 @@ def get_tasks():
 
 # Rota para adicionar novas tarefas
 @app.post('/add')
+@authentication
 def add_task():
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
@@ -82,6 +106,7 @@ def add_task():
 
 # Rota para adicionar novas tarefas com json
 @app.post('/api/v1/tasks')
+@authentication
 def add_task_json():
    task_data = request.json
    new_task = Task.create(
@@ -94,6 +119,7 @@ def add_task_json():
 
 # Rota para seleção da tarefa a ser editada
 @app.route('/edit/<id:int>')
+@authentication
 def edit_task(id):
     task = Task.get(Task.id == id)
     tasks = Task.select()
@@ -101,6 +127,7 @@ def edit_task(id):
 
 # Rota para editar tarefas
 @app.post('/edit/<id:int>')
+@authentication
 def update_task(id):
     task_name = request.forms.get('task_name')
     task_description = request.forms.get('task_description')
@@ -112,6 +139,7 @@ def update_task(id):
 
 # Rota para edição de tarefas usando json
 @app.put('/api/v1/tasks/<id:int>')
+@authentication
 def edit_task_json(id):
     task = Task.get(Task.id == id)
     task_data = request.json
@@ -123,6 +151,7 @@ def edit_task_json(id):
 
 # Rota para deletar as tarefas
 @app.route('/delete/<id:int>')
+@authentication
 def delete_task(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
@@ -130,6 +159,7 @@ def delete_task(id):
 
 # Rota para deletar as tarefas pelo id
 @app.delete('/api/v1/tasks/<id:int>')
+@authentication
 def delete_task_json(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
