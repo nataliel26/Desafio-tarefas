@@ -1,7 +1,14 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
-from models import db, Task, initialize_db
+from models import db, User, Task, initialize_db
+from functools import wraps
 import bcrypt
 import jwt
+
+with open('private_key.pem', 'r') as f:
+    private_key = f.read()
+
+with open('public_key.pem', 'r') as f:
+    public_key = f.read()
 
 app = Bottle()
 
@@ -15,6 +22,24 @@ def tasks_to_dict(task):
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='./static')
+
+# Rota para exibir o formulário de cadastro
+@app.get('/signup')
+def signup_page():
+    return template('account', signup=signup)
+
+# Rota para criação de conta
+@app.post('/signup')
+def signup():
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    User.create(username = username, password = hashed_password.decode('utf-8'))
+
+@app.get('/signin')
+def signin_page():
+    return template('account', signup=None)
+
 
 # Rota para exibir a lista de tarefas
 @app.get('/')

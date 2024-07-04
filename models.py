@@ -16,9 +16,6 @@ class Task(BaseModel):
 
 def initialize_db():
     db.connect()
-    db.create_tables([Task], safe=True)
+    db.create_tables([Task], safe = True)
+    db.create_tables([User], safe = True)
     db.close()
-
-
-
-    
