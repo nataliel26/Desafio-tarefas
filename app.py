@@ -26,7 +26,7 @@ def server_static(filepath):
 # Rota para exibir o formulário de cadastro
 @app.get('/signup')
 def signup_page():
-    return template('account', signup=signup)
+    return template('account', signup=True)
 
 # Rota para criação de conta
 @app.post('/signup')
@@ -34,11 +34,28 @@ def signup():
     username = request.forms.get('username')
     password = request.forms.get('password')
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    User.create(username = username, password = hashed_password.decode('utf-8'))
+    User.create(username=username, password=hashed_password.decode('utf-8'))
+    return redirect('/')
 
 @app.get('/signin')
 def signin_page():
     return template('account', signup=None)
+
+@app.post('/signin')
+def signin():
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+
+    try:
+        user = User.get(User.username == username)
+    except User.DoesNotExist:
+        response.status = 400
+        return "Usuário inválido"
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        response.status = 400
+        return "Senha inválida"
+    
+    return redirect('/')
 
 
 # Rota para exibir a lista de tarefas

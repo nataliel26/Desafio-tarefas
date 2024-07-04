@@ -11,7 +11,7 @@
     <main>
         <div class="container">
             <h2 id="form-title">{{ 'Criar conta' if signup else 'Entrar' }}</h2>
-            <form id="task-form" action="{{'/signup/' if signup else '/signin'}}" method="post">
+            <form id="task-form" action="{{'/signup' if signup else '/signin'}}" method="post">
                 <input type="text" name="username" placeholder="Nome de usuário" id="username" required>
                 <input type="text" name="password" id="password" placeholder="senha" required>
                 <input id="button" type="submit" value="{{'Registro' if signup else 'Entrar'}}">
