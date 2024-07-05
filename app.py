@@ -1,5 +1,5 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
-from models import db, User, Task, initialize_db
+from models import db, User, Task, initialize_db, migrate_db
 from functools import wraps
 import requests_oauthlib
 import bcrypt
@@ -9,24 +9,7 @@ app = Bottle()
 
 secret = "nat123"
 
-<<<<<<< HEAD
-def session():
-    try:
-        user = request.get_cookie('AUTH', None)
-        return user
-    except:
-        return None
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-=======
-def signed_in():
-    @wraps()
-    def user():
-        token = request.get_cookie('AUTH', None)
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-
-
->>>>>>> ad03d05db41728ebd2d989598d97b6af7257c48c
 def protected(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -46,12 +29,14 @@ def protected(f):
         return f(*args, **kwargs)
     return decorated
 
+
 def create_token(username):
     payload = {
         'username': username
     }
     token = jwt.encode(payload, secret, algorithm="HS256")
     return token
+
 
 def tasks_to_dict(task):
     return {
@@ -60,6 +45,8 @@ def tasks_to_dict(task):
         'description': task.task_description
     }
 
+
+# Rota para carregar arquivos estáticos
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='./static')
@@ -110,8 +97,8 @@ def logout():
 @app.get('/')
 def index():
     session = request.get_cookie('AUTH', None)
-    tasks = Task.select()
     if not session:
+        tasks = Task.select()
         return template('index', tasks=tasks, edit_task=None, session=None)
     return template('index', tasks=tasks, edit_task=None, session=True)
 
@@ -130,10 +117,6 @@ def add_task():
    user = request.get_cookie('AUTH', None)
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
-<<<<<<< HEAD
-   user = request.get_cookie('AUTH', None)
-=======
->>>>>>> ad03d05db41728ebd2d989598d97b6af7257c48c
    Task.create(task_name=task_name, task_description=task_description, user=user)
    return redirect('/')
 
@@ -202,4 +185,5 @@ def delete_task_json(id):
 
 if __name__ == '__main__':
     initialize_db()
+    migrate_db()
     run(app, host='localhost', port=8080, reloader=True, debug=True)

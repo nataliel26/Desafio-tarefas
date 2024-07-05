@@ -17,12 +17,10 @@
     <div class="container"></div>
         <ol><h2>Tarefas</h2>
             % for task in tasks:
-                <li><strong>{{task.task_name}}</strong><br><small>{{task.task_description}}</small>
+                <li><strong>{{task.task_name}}</strong><br><small>{{task.task_description}}</small><a href="/edit/{{task.id}}" class="btn">Editar</button></a><a href="/delete/{{task.id}}">Deletar</a>
                     <br>
-                    <a href="/edit/{{task.id}}" class="btn">Editar</button></a><a href="/delete/{{task.id}}">Deletar</a></li>
-                <li><strong>{{task.task_name}}</strong><br><small>{{task.task_description}}</small>
-                    <br>
-                    <a href="/edit/{{task.id}}" class="btn">Editar</button></a><a href="/delete/{{task.id}}">Deletar</a></li>
+                
+                </li>    
             % end
         </ol>
         <div class="form">
