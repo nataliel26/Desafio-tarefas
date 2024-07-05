@@ -9,6 +9,7 @@ app = Bottle()
 
 secret = "nat123"
 
+<<<<<<< HEAD
 def session():
     try:
         user = request.get_cookie('AUTH', None)
@@ -16,6 +17,16 @@ def session():
     except:
         return None
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+=======
+def signed_in():
+    @wraps()
+    def user():
+        token = request.get_cookie('AUTH', None)
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+
+
+>>>>>>> ad03d05db41728ebd2d989598d97b6af7257c48c
 def protected(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -116,9 +127,13 @@ def get_tasks():
 @app.post('/add')
 @protected
 def add_task():
+   user = request.get_cookie('AUTH', None)
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
+<<<<<<< HEAD
    user = request.get_cookie('AUTH', None)
+=======
+>>>>>>> ad03d05db41728ebd2d989598d97b6af7257c48c
    Task.create(task_name=task_name, task_description=task_description, user=user)
    return redirect('/')
 
