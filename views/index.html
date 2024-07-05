@@ -10,15 +10,16 @@
 </head>
 <body>
     <header>
-        <a class="btn" href="/signup">Criar conta</a>
-        <a class="btn" href="/signin">Entrar</a>
+        <a class="btn" href="{{'/logout' if session else '/signup'}}">{{'Logout' if session else 'Criar conta'}}</a>
+        <a class="btn" href="{{'' if session else '/signin'}}">{{'' if session else 'Entrar'}}</a>
     </header>
     <main>
     <div class="container"></div>
         <ol><h2>Tarefas</h2>
             % for task in tasks:
-            <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <br> <small>created by {{task.user}}</small> 
-                <a href="/edit/{{task.id}}" class="btn">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
+                <li><strong>{{task.task_name}}</strong><br><small>{{task.task_description}}</small>
+                    <br>
+                    <a href="/edit/{{task.id}}" class="btn">Editar</button></a><a href="/delete/{{task.id}}">Deletar</a></li>
             % end
         </ol>
         <div class="form">

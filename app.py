@@ -1,5 +1,5 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
-from models import db, User, Task, initialize_db, migrate_db
+from models import db, User, Task, initialize_db
 from functools import wraps
 import requests_oauthlib
 import bcrypt
@@ -7,13 +7,15 @@ import jwt
 
 app = Bottle()
 
-# with open('private_key.pem', 'r') as f:
-#     private_key = f.read()
-
-# with open('public_key.pem', 'r') as f:
-#     public_key = f.read()
 secret = "nat123"
 
+def session():
+    try:
+        user = request.get_cookie('AUTH', None)
+        return user
+    except:
+        return None
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 def protected(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -24,7 +26,6 @@ def protected(f):
             return redirect('/signin')
         
         try:
-            # token = auth.split(" ")[1]s
             decoded = jwt.decode(token, secret, algorithms=["HS256"])
             request.user = decoded['username']
         except jwt.InvalidTokenError:
@@ -86,14 +87,22 @@ def signin():
     
     token = create_token(user.username)
     response.set_cookie('AUTH', token)
+    return redirect ('/')
+
+@app.get('/logout')
+def logout():
+    response.delete_cookie('AUTH')
     return redirect('/')
 
 
 # Rota para exibir a lista de tarefas
 @app.get('/')
 def index():
+    session = request.get_cookie('AUTH', None)
     tasks = Task.select()
-    return template('index', tasks=tasks, edit_task=None)
+    if not session:
+        return template('index', tasks=tasks, edit_task=None, session=None)
+    return template('index', tasks=tasks, edit_task=None, session=True)
 
 # Rota para exibir as tarefas em formato application/json
 @app.get('/api/v1/tasks')
@@ -109,7 +118,8 @@ def get_tasks():
 def add_task():
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
-   Task.create(task_name=task_name, task_description=task_description)
+   user = request.get_cookie('AUTH', None)
+   Task.create(task_name=task_name, task_description=task_description, user=user)
    return redirect('/')
 
 # Rota para adicionar novas tarefas com json
@@ -177,5 +187,4 @@ def delete_task_json(id):
 
 if __name__ == '__main__':
     initialize_db()
-    migrate_db()
     run(app, host='localhost', port=8080, reloader=True, debug=True)
