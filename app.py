@@ -1,35 +1,45 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
-from models import db, User, Task, initialize_db
+from models import db, User, Task, initialize_db, migrate_db
 from functools import wraps
+import requests_oauthlib
 import bcrypt
 import jwt
 
 app = Bottle()
 
-with open('private_key.pem', 'r') as f:
-    private_key = f.read()
+# with open('private_key.pem', 'r') as f:
+#     private_key = f.read()
 
-with open('public_key.pem', 'r') as f:
-    public_key = f.read()
+# with open('public_key.pem', 'r') as f:
+#     public_key = f.read()
+secret = "nat123"
 
-def authentication(func):
-    @wraps(func)
+def protected(f):
+    @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.get_header('Authorization')
-
+        token = request.get_cookie('AUTH', None)
+        
         if not token:
             response.status = 401
             return redirect('/signin')
         
-        try: 
-            data = jwt.decode(token, public_key, algorithms=['RS256'])
-            request.user = data['username']
+        try:
+            # token = auth.split(" ")[1]s
+            decoded = jwt.decode(token, secret, algorithms=["HS256"])
+            request.user = decoded['username']
         except jwt.InvalidTokenError:
             response.status = 401
             return redirect('/signin')
         
-        return func(*args, **kwargs)
+        return f(*args, **kwargs)
     return decorated
+
+def create_token(username):
+    payload = {
+        'username': username
+    }
+    token = jwt.encode(payload, secret, algorithm="HS256")
+    return token
 
 def tasks_to_dict(task):
     return {
@@ -74,10 +84,8 @@ def signin():
         response.status = 400
         return "Senha inválida"
     
-    token = jwt.encode({
-        'username': user.username
-    }, private_key, algorithm='RS256')
-    
+    token = create_token(user.username)
+    response.set_cookie('AUTH', token)
     return redirect('/')
 
 
@@ -97,7 +105,7 @@ def get_tasks():
 
 # Rota para adicionar novas tarefas
 @app.post('/add')
-@authentication
+@protected
 def add_task():
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
@@ -106,7 +114,7 @@ def add_task():
 
 # Rota para adicionar novas tarefas com json
 @app.post('/api/v1/tasks')
-@authentication
+@protected
 def add_task_json():
    task_data = request.json
    new_task = Task.create(
@@ -119,7 +127,7 @@ def add_task_json():
 
 # Rota para seleção da tarefa a ser editada
 @app.route('/edit/<id:int>')
-@authentication
+@protected
 def edit_task(id):
     task = Task.get(Task.id == id)
     tasks = Task.select()
@@ -127,7 +135,7 @@ def edit_task(id):
 
 # Rota para editar tarefas
 @app.post('/edit/<id:int>')
-@authentication
+@protected
 def update_task(id):
     task_name = request.forms.get('task_name')
     task_description = request.forms.get('task_description')
@@ -139,7 +147,7 @@ def update_task(id):
 
 # Rota para edição de tarefas usando json
 @app.put('/api/v1/tasks/<id:int>')
-@authentication
+@protected
 def edit_task_json(id):
     task = Task.get(Task.id == id)
     task_data = request.json
@@ -151,7 +159,7 @@ def edit_task_json(id):
 
 # Rota para deletar as tarefas
 @app.route('/delete/<id:int>')
-@authentication
+@protected
 def delete_task(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
@@ -159,7 +167,7 @@ def delete_task(id):
 
 # Rota para deletar as tarefas pelo id
 @app.delete('/api/v1/tasks/<id:int>')
-@authentication
+@protected
 def delete_task_json(id):
     task = Task.get(Task.id == id)
     task.delete_instance()
@@ -169,4 +177,5 @@ def delete_task_json(id):
 
 if __name__ == '__main__':
     initialize_db()
+    migrate_db()
     run(app, host='localhost', port=8080, reloader=True, debug=True)

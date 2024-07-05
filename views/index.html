@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
     <link rel="stylesheet" type="text/css" href="/static/style.css" >
+    <script src="..\static\script.js" defer></script>
 </head>
 <body>
     <header>
@@ -16,7 +17,8 @@
     <div class="container"></div>
         <ol><h2>Tarefas</h2>
             % for task in tasks:
-            <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <a href="/edit/{{task.id}}" class="btn">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
+            <li><strong>{{task.task_name}}</strong> <br> <small>{{task.task_description}}</small> <br> <small>created by {{task.user}}</small> 
+                <a href="/edit/{{task.id}}" class="btn">Editar</button></a> <a href="/delete/{{task.id}}">Deletar</a></li>
             % end
         </ol>
         <div class="form">
