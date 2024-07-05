@@ -9,11 +9,11 @@ app = Bottle()
 
 secret = "nat123"
 
-def user():
-    token = request.get_cookie('AUTH', secret=secret)
-    username = jwt.decode(token, secret, algorithms=["HS256"])
-    return username
-
+def get_current_user():
+    token = request.get_cookie('AUTH')
+    data = jwt.decode(token, secret, algorithms=["HS256"])
+    return User.get(User.username == data['username'])
+    
 
 def protected(f):
     @wraps(f)
@@ -119,12 +119,10 @@ def get_tasks():
 @app.post('/add')
 @protected
 def add_task():
-   token = request.get_cookie('AUTH', None)
-   decoded = jwt.decode(token, secret, algorithms=["HS256"])
-   user = decoded['username']
+   user = get_current_user()
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
-   Task.create(task_name=task_name, task_description=task_description, user=user)
+   Task.create(task_name=task_name, task_description=task_description, user=user, created_by=user.username)
    return redirect('/')
 
 # Rota para adicionar novas tarefas com json

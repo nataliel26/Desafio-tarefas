@@ -10,14 +10,14 @@ class BaseModel(Model):
         database = db
 
 class User(BaseModel):
-    user_id = AutoField()
     username = CharField(unique=True)
     password = CharField()
 
 class Task(BaseModel):
     task_name = CharField ()
     task_description = TextField ()
-    user = ForeignKeyField(User, field='username', backref='tasks', default=User)
+    user = ForeignKeyField(User, field='username', backref='tasks')
+    created_by = CharField()
 
 
 def initialize_db():

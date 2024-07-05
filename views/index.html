@@ -19,7 +19,7 @@
             % for task in tasks:
                 <li><strong>{{task.task_name}}</strong><br><small>{{task.task_description}}</small><a href="/edit/{{task.id}}" class="btn">Editar</button></a><a href="/delete/{{task.id}}">Deletar</a>
                     <br>
-                
+                <small>Criado por {{task.user.username}}</small>
                 </li>    
             % end
         </ol>
