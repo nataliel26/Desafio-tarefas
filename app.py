@@ -1,5 +1,5 @@
 from bottle import  Bottle, route, run, template, get, post, request, redirect, static_file, response
-from models import db, User, Task, initialize_db, migrate_db
+from models import db, User, Task, initialize_db
 from functools import wraps
 import requests_oauthlib
 import bcrypt
@@ -8,6 +8,11 @@ import jwt
 app = Bottle()
 
 secret = "nat123"
+
+def user():
+    token = request.get_cookie('AUTH', secret=secret)
+    username = jwt.decode(token, secret, algorithms=["HS256"])
+    return username
 
 
 def protected(f):
@@ -96,9 +101,9 @@ def logout():
 # Rota para exibir a lista de tarefas
 @app.get('/')
 def index():
+    tasks = Task.select()
     session = request.get_cookie('AUTH', None)
     if not session:
-        tasks = Task.select()
         return template('index', tasks=tasks, edit_task=None, session=None)
     return template('index', tasks=tasks, edit_task=None, session=True)
 
@@ -114,7 +119,9 @@ def get_tasks():
 @app.post('/add')
 @protected
 def add_task():
-   user = request.get_cookie('AUTH', None)
+   token = request.get_cookie('AUTH', None)
+   decoded = jwt.decode(token, secret, algorithms=["HS256"])
+   user = decoded['username']
    task_name = request.forms.get('task_name')
    task_description = request.forms.get('task_description')
    Task.create(task_name=task_name, task_description=task_description, user=user)
@@ -185,5 +192,4 @@ def delete_task_json(id):
 
 if __name__ == '__main__':
     initialize_db()
-    migrate_db()
     run(app, host='localhost', port=8080, reloader=True, debug=True)
